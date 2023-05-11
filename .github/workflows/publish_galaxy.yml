@@ -1,12 +1,14 @@
 # This is a basic workflow to help you get started with Actions
 
-name: publish to Ansible galaxy
+name: publish collection to Ansible galaxy
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
-    branches: [ "master" ]
+    # branches: [ "master" ]
+    tags: 
+    - "*-v*.*.*"
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -17,17 +19,23 @@ jobs:
     environment: galaxy
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dir: 
-        - camaeel/general
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
+      - name: Set outputs
+        id: vars
+        run: |
+          COLLECTION=$(echo $GITHUB_REF_NAME | cut -d- -f1)
+          VERSION=$(echo $GITHUB_REF_NAME | cut -d- -f2-)
+          echo "::set-output name=collection::$COLLECTION"
+          echo "::set-output name=version::$VERSION"
+      - name: Get the version name from the tags
+        run: echo "RELEASE_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
       - name: Build and Deploy Collection
         uses: artis3n/ansible_galaxy_collection@v2
         with:
           api_key: '${{ secrets.GALAXY_API_KEY }}'
-          collection_dir: '${{ matrix.dir }}'
+          collection_dir: 'camaeel/${{ steps.vars.outputs.collection }}'
+          galaxy_version: '${{ steps.vars.outputs.version }}'
