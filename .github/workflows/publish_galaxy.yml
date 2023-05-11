@@ -29,8 +29,8 @@ jobs:
         run: |
           COLLECTION=$(echo $GITHUB_REF_NAME | cut -d- -f1)
           VERSION=$(echo $GITHUB_REF_NAME | cut -d- -f2-)
-          echo "COLLECTION::$COLLECTION" >> "$GITHUB_OUTPUT"
-          echo "VERSION::$VERSION" >> "$GITHUB_OUTPUT"
+          echo "COLLECTION=$COLLECTION" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and Deploy Collection
         uses: artis3n/ansible_galaxy_collection@v2
         with:
