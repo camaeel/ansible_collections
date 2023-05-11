@@ -1,0 +1,40 @@
+---
+- name: "set default editor to vim"
+  community.general.alternatives:
+    name: editor
+    path: /usr/bin/vim.basic
+    state: selected
+
+- name: "create users"
+  ansible.builtin.user:
+    name: "{{item.name}}"
+    group: users
+    groups: "{{item.groups}}"
+    shell: /bin/bash
+  loop: "{{linux_users}}"
+
+- name: "install keys"
+  ansible.posix.authorized_key:
+    user: "{{ item.0.name }}"
+    state: present
+    key: "{{ item.1 }}"
+  loop: "{{ linux_users | subelements('keys')  }}"
+
+- name: Allow  sudo users to sudo without password
+  when: sudoers_all_enabled == true
+  community.general.sudoers:
+    name: sudo_no_passwd
+    state: present
+    group: sudo
+    nopassword: true
+    runas: ALL
+    commands: ALL
+    validation: required
+
+- name: settings for sshd
+  when: sshd_hardening == true
+  template: 
+    src: hardening.conf
+    dest: /etc/ssh/sshd_config.d/hardening.conf
+  notify:
+  - Restart sshd
