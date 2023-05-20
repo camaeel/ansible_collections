@@ -25,7 +25,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-      - role: camaeel.install_packages
+      - role: camaeel.general.install_packages
         add_packages_list:
         - vim
         remove_packages_list:
