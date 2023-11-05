@@ -6,14 +6,6 @@
   loop: "{{ sources_keys }}"
   when: sources_keys is defined
 
-- name: "Add source repositories"
-  apt_repository:
-    repo: "{{item}}"
-    state: present
-  with_items: "{{ sources_repos }}"
-  when: sources_repos is defined
-  register: add_source_repos_reg
-
 - name: "Remove source repositories"
   apt_repository:
     repo: "{{item}}"
@@ -21,6 +13,14 @@
   with_items: "{{ remove_sources_repos }}"
   when: remove_sources_repos is defined
   register: remove_source_repos_reg
+
+- name: "Add source repositories"
+  apt_repository:
+    repo: "{{item}}"
+    state: present
+  with_items: "{{ sources_repos }}"
+  when: sources_repos is defined
+  register: add_source_repos_reg
 
 - name: "update packages (if repos added)"
   apt:
