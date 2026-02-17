@@ -32,7 +32,7 @@ jobs:
           echo "COLLECTION=$COLLECTION" >> "$GITHUB_OUTPUT"
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
       - name: Build and Deploy Collection
-        uses: artis3n/ansible_galaxy_collection@v2
+        uses: artis3n/ansible_galaxy_collection@v3
         with:
           api_key: '${{ secrets.GALAXY_API_KEY }}'
           collection_dir: 'camaeel/${{ steps.vars.outputs.COLLECTION }}'
